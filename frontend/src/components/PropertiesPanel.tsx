@@ -77,15 +77,14 @@ const NODE_CONFIGS = {
 };
 
 const CONDITION_FIELDS = [
-  { key: 'name', label: 'Name', type: 'string' },
-  { key: 'label', label: 'Label', type: 'string' },
-  { key: 'hasAttachment', label: 'Has Attachment', type: 'boolean' },
-  { key: 'subject', label: 'Subject', type: 'string' },
-  { key: 'from', label: 'From', type: 'string' },
+  { key: 'from', label: 'From', type: 'string' },    // Changed from 'name'
   { key: 'to', label: 'To', type: 'string' },
+  { key: 'subject', label: 'Subject', type: 'string' },
+  { key: 'hasAttachment', label: 'Has Attachment', type: 'boolean' },
+  { key: 'label', label: 'Label', type: 'string' },
 ];
 
-// GmailConfig: Add name filter for 'read' action
+// GmailConfig: Updated to use 'from' instead of 'name' and add missing fields
 const GmailConfig: React.FC<{
   config: any;
   onConfigChange: (key: string, value: any) => void;
@@ -131,23 +130,23 @@ const GmailConfig: React.FC<{
       {config.action === 'read' && (
         <div className="space-y-2">
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Name (Sender/Recipient)</label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">From (Sender)</label>
             <input
               type="text"
               className="w-full p-2 border border-gray-300 rounded text-sm"
-              placeholder="e.g. John Doe or john@example.com"
-              value={config.name || ''}
-              onChange={e => onConfigChange('name', e.target.value)}
+              placeholder="e.g. john@example.com or John Doe"
+              value={config.from || ''}
+              onChange={e => onConfigChange('from', e.target.value)}
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Label</label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">To (Recipient)</label>
             <input
               type="text"
               className="w-full p-2 border border-gray-300 rounded text-sm"
-              placeholder="e.g. Important, Work"
-              value={config.label || ''}
-              onChange={e => onConfigChange('label', e.target.value)}
+              placeholder="e.g. me@example.com"
+              value={config.to || ''}
+              onChange={e => onConfigChange('to', e.target.value)}
             />
           </div>
           <div>
@@ -165,12 +164,24 @@ const GmailConfig: React.FC<{
             <select
               className="w-full p-2 border border-gray-300 rounded text-sm"
               value={config.hasAttachment === true ? 'true' : config.hasAttachment === false ? 'false' : ''}
-              onChange={e => onConfigChange('hasAttachment', e.target.value === 'true')}
+              onChange={e => onConfigChange('hasAttachment', e.target.value === 'true' ? true : e.target.value === 'false' ? false : undefined)}
             >
               <option value="">Any</option>
               <option value="true">Yes</option>
               <option value="false">No</option>
             </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Max Results</label>
+            <input
+              type="number"
+              className="w-full p-2 border border-gray-300 rounded text-sm"
+              placeholder="10"
+              min="1"
+              max="100"
+              value={config.maxResults || ''}
+              onChange={e => onConfigChange('maxResults', e.target.value ? parseInt(e.target.value) : undefined)}
+            />
           </div>
         </div>
       )}

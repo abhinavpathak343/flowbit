@@ -29,27 +29,33 @@ const registry: Record<string, Record<string, (input: any) => Promise<any>>> = {
         };
       }
     },
-    read: async (input) => {
-      try {
-        const emails = await readEmails({ 
-          from: input?.from, 
-          query: input?.query, 
-          maxResults: input?.maxResults || 10 
-        });
-        return { 
-          success: true, 
-          emails,
-          count: emails?.length || 0,
-          query: input?.query,
-          from: input?.from
-        };
-      } catch (error: any) {
-        return { 
-          success: false, 
-          error: error.message 
-        };
+   read: async (input) => {
+  try {
+    const emails = await readEmails({ 
+      from: input?.from,
+      to: input?.to,           // Add this
+      subject: input?.subject, // Add this
+      hasAttachment: input?.hasAttachment, // Add this
+      maxResults: input?.maxResults || 10 
+    });
+    return { 
+      success: true, 
+      emails,
+      count: emails?.length || 0,
+      filters: {
+        from: input?.from,
+        to: input?.to,
+        subject: input?.subject,
+        hasAttachment: input?.hasAttachment
       }
-    },
+    };
+  } catch (error: any) {
+    return { 
+      success: false, 
+      error: error.message 
+    };
+  }
+},
     schedule: async (input) => {
       // Schedule email for later - in production you'd use a job queue
       const scheduledTime = input?.scheduleTime ? new Date(input.scheduleTime) : new Date(Date.now() + 60000);

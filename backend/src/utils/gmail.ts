@@ -2,6 +2,15 @@
 import { google } from 'googleapis';
 import { getAuthorizedClient } from '../controller/authController';
 
+// wherever ReadEmailsParams is defined (probably in gmail.ts or a shared types file)
+export interface ReadEmailsParams {
+  from?: string;
+  to?: string;
+  subject?: string;
+  hasAttachment?: boolean;
+  maxResults?: number;
+  query?: string; // <-- add this
+}
 function getFallbackClient() {
   const CLIENT_ID = process.env.GMAIL_CLIENT_ID;
   const CLIENT_SECRET = process.env.GMAIL_CLIENT_SECRET;
@@ -18,47 +27,67 @@ function getFallbackClient() {
   }
   return oAuth2Client;
 }
+// gmail.ts
 
-export async function readEmails(params?: { from?: string; query?: string; maxResults?: number }) {
+
+
+function extractEmail(address: string): string | null {
+  const match = address.match(/<(.+?)>/);
+  if (match) return match[1].toLowerCase();
+  return address.includes('@') ? address.trim().toLowerCase() : null;
+}
+
+
+export async function readEmails(params?: ReadEmailsParams) {
   try {
-    // Try to use authorized client first, fallback to refresh token
+    // Use authorized client if available, otherwise fallback
     let client;
     try {
-      const authorizedClient = getAuthorizedClient();
-      if (authorizedClient) {
-        client = authorizedClient;
-      } else {
-        client = getFallbackClient();
-      }
+      client = getAuthorizedClient() || getFallbackClient();
     } catch {
       client = getFallbackClient();
     }
-    
+
     const gmail = google.gmail({ version: 'v1', auth: client });
-    let q = params?.query || '';
-    if (params?.from) {
-      q = q ? `${q} from:${params.from}` : `from:${params.from}`;
-    }
-    const res = await gmail.users.messages.list({ userId: 'me', maxResults: params?.maxResults || 5, q: q || undefined });
+
+    // Build query strictly
+    let q = '';
+    if (params?.from) q += (q ? ' ' : '') + `from:${params.from}`;
+    if (params?.to) q += (q ? ' ' : '') + `to:${params.to}`;
+    if (params?.subject) q += (q ? ' ' : '') + `subject:${params.subject}`;
+    if (params?.hasAttachment) q += (q ? ' ' : '') + `has:attachment`;
+
+    const res = await gmail.users.messages.list({
+      userId: 'me',
+      maxResults: params?.maxResults || 20,
+      q: q || undefined,
+    });
+
     const messages = res.data.messages || [];
-    const results = [];
+    const results: any[] = [];
+
     for (const msg of messages) {
       const msgRes = await gmail.users.messages.get({ userId: 'me', id: msg.id! });
       const headers = msgRes.data.payload?.headers || [];
+
       const subject = headers.find(h => h.name === 'Subject')?.value || '';
-      const from = headers.find(h => h.name === 'From')?.value || '';
-      const to = headers.find(h => h.name === 'To')?.value || '';
+      const fromHeader = headers.find(h => h.name === 'From')?.value || '';
+      const toHeader = headers.find(h => h.name === 'To')?.value || '';
       const dateHeader = headers.find(h => h.name === 'Date')?.value || '';
       const date = dateHeader ? new Date(dateHeader).toISOString() : undefined;
       const snippet = msgRes.data.snippet || '';
-      results.push({ subject, from, to, date, snippet });
+
+      results.push({ subject, from: fromHeader, to: toHeader, date, snippet });
     }
+
     return results;
   } catch (error) {
     console.error('Error reading emails:', error);
     throw error;
   }
 }
+
+
 
 export async function sendEmail({ to, subject, message, inReplyTo }: { to: string; subject?: string; message?: string; inReplyTo?: string }) {
   try {
