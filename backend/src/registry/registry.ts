@@ -296,9 +296,6 @@ const registry: Record<string, Record<string, (input: any) => Promise<any>>> = {
     summarize: async (input) => {
       try {
         const inputText = extractText(input) ?? (typeof input?.input === 'string' ? input.input : '');
-        if (!inputText || String(inputText).trim() === '') {
-          return { success: false, error: 'No input text provided to LLM for summarization' };
-        }
         const response = await fetch('http://localhost:3000/api/llm/process', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -333,9 +330,6 @@ const registry: Record<string, Record<string, (input: any) => Promise<any>>> = {
     reply: async (input) => {
       try {
         const inputText = extractText(input) ?? (typeof input?.input === 'string' ? input.input : '');
-        if (!inputText || String(inputText).trim() === '') {
-          return { success: false, error: 'No input text provided to LLM for reply generation' };
-        }
         const response = await fetch('http://localhost:3000/api/llm/process', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -371,9 +365,6 @@ const registry: Record<string, Record<string, (input: any) => Promise<any>>> = {
     extract: async (input) => {
       try {
         const inputText = extractText(input) ?? (typeof input?.input === 'string' ? input.input : '');
-        if (!inputText || String(inputText).trim() === '') {
-          return { success: false, error: 'No input text provided to LLM for extraction' };
-        }
         const response = await fetch('http://localhost:3000/api/llm/process', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -407,10 +398,6 @@ const registry: Record<string, Record<string, (input: any) => Promise<any>>> = {
     },
     translate: async (input) => {
       try {
-        const inputText = extractText(input) ?? (typeof input?.input === 'string' ? input.input : '');
-        if (!inputText || String(inputText).trim() === '') {
-          return { success: false, error: 'No input text provided to LLM for translation' };
-        }
         const response = await fetch('http://localhost:3000/api/llm/process', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
