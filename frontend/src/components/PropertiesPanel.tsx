@@ -93,12 +93,12 @@ const GmailConfig: React.FC<{
 }> = React.memo(({ config, onConfigChange, connected, onConnect }) => {
   const handleConnect = useCallback(async () => {
     try {
-      const res = await fetch('/api/auth/google/url');
+      const res = await fetch('https://flowbit-a97z.onrender.com/api/auth/google/url');
       const data = await res.json();
       const authWindow = window.open(data.url, '_blank', 'width=500,height=700');
       const poll = setInterval(async () => {
         try {
-          const s = await fetch('/api/auth/status');
+          const s = await fetch('https://flowbit-a97z.onrender.com/api/auth/status');
           const sd = await s.json();
           if (sd.connected) {
             clearInterval(poll);
