@@ -28,17 +28,8 @@ app.use('/api', workflowRoutes);
 app.use('/api', authRoutes);
 app.use('/api/llm', llmRoutes);
 app.use('/api', webhookRoutes);
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    message: 'Server is running',
-    timestamp: new Date().toISOString(),
-    services: {
-      llm: true,
-      gmail: true,
-      workflow: true,
-      webhook: true
-    }
-  });
+app.get("/", (req: Request, res: Response) => {
+  res.send("Hello");
 });
 
 // Basic error handler
