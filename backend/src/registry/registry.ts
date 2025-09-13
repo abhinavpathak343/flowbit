@@ -296,7 +296,7 @@ const registry: Record<string, Record<string, (input: any) => Promise<any>>> = {
     summarize: async (input) => {
       try {
         const inputText = extractText(input) ?? (typeof input?.input === 'string' ? input.input : '');
-        const response = await fetch('http://localhost:3000/api/llm/process', {
+        const response = await fetch('VITE_API_URL/api/llm/process', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -330,7 +330,7 @@ const registry: Record<string, Record<string, (input: any) => Promise<any>>> = {
     reply: async (input) => {
       try {
         const inputText = extractText(input) ?? (typeof input?.input === 'string' ? input.input : '');
-        const response = await fetch('http://localhost:3000/api/llm/process', {
+        const response = await fetch('VITE_API_URL/api/llm/process', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -365,7 +365,7 @@ const registry: Record<string, Record<string, (input: any) => Promise<any>>> = {
     extract: async (input) => {
       try {
         const inputText = extractText(input) ?? (typeof input?.input === 'string' ? input.input : '');
-        const response = await fetch('http://localhost:3000/api/llm/process', {
+        const response = await fetch('VITE_API_URL/api/llm/process', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -398,7 +398,7 @@ const registry: Record<string, Record<string, (input: any) => Promise<any>>> = {
     },
     translate: async (input) => {
       try {
-        const response = await fetch('http://localhost:3000/api/llm/process', {
+        const response = await fetch('VITE_API_URL/api/llm/process', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

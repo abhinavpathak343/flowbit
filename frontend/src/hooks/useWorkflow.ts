@@ -116,7 +116,7 @@ export const useWorkflow = () => {
 
     try {
       // Make actual HTTP request to backend
-      const response = await fetch('http://localhost:3000/api/workflow/execute', {
+      const response = await fetch('VITE_API_URL/api/workflow/execute', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -261,7 +261,7 @@ export const useWorkflow = () => {
     const { config } = node.data;
     console.log('Executing LLM node:', config);
     try {
-      const response = await fetch('http://localhost:3000/api/llm/process', {
+      const response = await fetch('VITE_API_URL/api/llm/process', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
