@@ -28,9 +28,7 @@ app.use('/api', workflowRoutes);
 app.use('/api', authRoutes);
 app.use('/api/llm', llmRoutes);
 app.use('/api', webhookRoutes);
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello");
-});
+
 
 // Basic error handler
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
